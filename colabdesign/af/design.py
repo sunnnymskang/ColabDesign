@@ -192,7 +192,7 @@ class _af_design:
     # run
     self.run(backprop=backprop, callback=callback)
 
-    # normalize gradient
+    # normalize gradient - Frobenieus norm/2-norm
     g = self.aux["grad"]["seq"]
     gn = jnp.linalg.norm(g,axis=(-1,-2),keepdims=True)
     
@@ -203,7 +203,7 @@ class _af_design:
     lr = self.opt["lr"] * lr_scale
     self.aux["grad"] = jax.tree_map(lambda x:x*lr, self.aux["grad"])
 
-    # apply gradient
+    # apply gradient and update state (i.e. sequence) with grad
     self._state = self._update_fun(self._k, self.aux["grad"], self._state)
     self._params = self._get_params(self._state)
 

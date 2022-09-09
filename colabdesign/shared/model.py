@@ -95,6 +95,7 @@ class design_model:
       
       x = jnp.broadcast_to(jnp.asarray(seq),shape)
 
+    # Creating differentiable categorical sequence with Gumbel-softmax reparameterization trick
     if "gumbel" in mode:
       y_gumbel = jax.random.gumbel(self.key(),shape)
       if "soft" in mode:

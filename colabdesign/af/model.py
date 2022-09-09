@@ -30,6 +30,7 @@ class mk_af_model(design_model, _af_inputs, _af_loss, _af_prep, _af_design, _af_
     assert protocol in ["fixbb","hallucination","binder","partial"]
     assert recycle_mode in ["average","add_prev","backprop","last","sample"]
     assert crop_mode in ["slide","roll","pair","dist"]
+    assert os.path.exists(data_dir)
     
     # decide if templates should be used
     if protocol == "binder": use_templates = True
@@ -92,6 +93,7 @@ class mk_af_model(design_model, _af_inputs, _af_loss, _af_prep, _af_design, _af_
 
     self._model_params, self._model_names = [],[]
     for model_name in model_names:
+      print(model_name)
       params = data.get_model_haiku_params(model_name=model_name, data_dir=data_dir)
       if params is not None:
         if not use_templates:
@@ -123,11 +125,11 @@ class mk_af_model(design_model, _af_inputs, _af_loss, _af_prep, _af_design, _af_
       # get sequence
       seq = self._get_seq(inputs, params, opt, aux, key())
             
-      # update sequence features
+      # update sequence input features for alphafold
       pssm = jnp.where(opt["use_pssm"], seq["pssm"], seq["pseudo"])
       update_seq(seq["pseudo"], inputs, seq_pssm=pssm)
       
-      # update amino acid sidechain identity
+      # update amino acid sidechain identity input feature for alphafold
       B,L = inputs["aatype"].shape[:2]
       aatype = jax.nn.one_hot(seq["pseudo"][0].argmax(-1),21)
       update_aatype(jnp.broadcast_to(aatype,(B,L,21)), inputs)

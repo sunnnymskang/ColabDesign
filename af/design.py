@@ -22,14 +22,18 @@ def get_pdb(pdb_code=""):
   ## Fixed backbone design
 
 clear_mem()
-af_model = mk_afdesign_model(protocol="fixbb")
+DATA_DIR = os.path.join(os.path.dirname(os.getcwd()),'colabdesign','params')
+af_model = mk_afdesign_model(protocol="fixbb", data_dir = DATA_DIR)
 af_model.prep_inputs(pdb_filename=get_pdb("1TEN"), chain="A")
 
 print("length", af_model._len)
 print("weights", af_model.opt["weights"])
 
 af_model.restart()
-af_model.design_3stage()
+# default
+# af_model.design_3stage()
+# shorter
+af_model.design_3stage(soft_iters=100, temp_iters=50, hard_iters=5)
 
 af_model.plot_traj()
 
@@ -38,7 +42,7 @@ af_model.plot_pdb()
 
 HTML(af_model.animate())
 
-af_model.get_seqs()
+print(af_model.get_seqs())
 
   ##Hallucination
 # clear_mem()

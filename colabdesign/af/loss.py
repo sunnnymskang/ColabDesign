@@ -22,12 +22,13 @@ class _af_loss:
     '''get losses'''
     plddt_prob = jax.nn.softmax(outputs["predicted_lddt"]["logits"])
     plddt_loss = (plddt_prob * jnp.arange(plddt_prob.shape[-1])[::-1]).mean(-1)
+    # calculate con, helix, pae loss from alphafold prediction and update it to aux["losses"]
     self._get_pairwise_loss(inputs, outputs, opt, aux)
 
     copies = self._args["copies"]
     if self._args["repeat"] or not self._args["homooligomer"]: copies = 1      
     
-    # rmsd loss
+    # rmsd loss between af2 prediction and batch (i.e. desired structure)
     aln = get_rmsd_loss(inputs, outputs, copies=copies)
     rmsd, aux["atom_positions"] = aln["rmsd"], aln["align"](aux["atom_positions"])
 

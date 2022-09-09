@@ -37,5 +37,7 @@ def get_model_haiku_params(model_name: str, data_dir: str) -> hk.Params:
   if not os.path.isfile(path): path = os.path.join(data_dir, f'{model_name}.npz')
   if os.path.isfile(path):
     with open(path, 'rb') as f:
+      print(path)
       params = np.load(io.BytesIO(f.read()), allow_pickle=False)
     return utils.flat_params_to_haiku(params)
+  #TODO: else -> throws an error to flag that there's no model parameter

@@ -145,8 +145,11 @@ def get_TrR_model(protocol="fixbb", L=None, num_models=1, hard=True, use_theta=T
 
   def prep_seq(x_logits):
     x_soft = tf.nn.softmax(x_logits,-1)
+    #
+
     if hard:
       x_hard = tf.one_hot(tf.argmax(x_logits,-1),20)
+      # Results in allowing one-hot encoded sequence in the forward pass but back-propagate the soft version
       x = tf.stop_gradient(x_hard - x_soft) + x_soft
     else:
       x = x_soft
